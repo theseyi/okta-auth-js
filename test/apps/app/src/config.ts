@@ -53,7 +53,7 @@ export function getDefaultConfig(): Config {
       secure: true
     },
     useInteractionCodeFlow: false,
-    enableSharedStorage: false
+    enableSharedStorage: true
   };
 }
 
@@ -79,7 +79,7 @@ export function getConfigFromUrl(): Config {
   const idps = url.searchParams.get('idps') || '';
   const useInteractionCodeFlow = url.searchParams.get('useInteractionCodeFlow') === 'true'; // off by default
   const forceRedirect = url.searchParams.get('forceRedirect') === 'true'; // off by default
-  const enableSharedStorage = url.searchParams.get('enableSharedStorage') === 'true'; // off by default
+  const enableSharedStorage = url.searchParams.get('enableSharedStorage') !== 'false'; // on by default
 
   return {
     forceRedirect,

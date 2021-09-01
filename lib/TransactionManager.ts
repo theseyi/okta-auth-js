@@ -48,7 +48,7 @@ export default class TransactionManager {
     this.saveNonceCookie = options.saveNonceCookie === false ? false : true;
     this.saveStateCookie = options.saveStateCookie === false ? false : true;
     this.saveParamsCookie = options.saveParamsCookie === false ? false : true;
-    this.enableSharedStorage = options.enableSharedStorage === true ? true : false;
+    this.enableSharedStorage = options.enableSharedStorage === false ? false : true;
     this.options = options;
   }
 
