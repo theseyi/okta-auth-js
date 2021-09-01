@@ -13,7 +13,7 @@
  */
 import { AuthSdkError } from '../errors';
 import { isInteractionRequiredError, urlParamsToObject } from './util';
-import { ParseFromUrlOptions, TokenResponse, CustomUrls, TransactionMeta } from '../types';
+import { ParseFromUrlOptions, TokenResponse, CustomUrls, TransactionMeta, OAuthParams } from '../types';
 import { isString } from '../util';
 import { handleOAuthResponse } from './handleOAuthResponse';
 
@@ -65,15 +65,17 @@ export function parseFromUrl(sdk, options: string | ParseFromUrlOptions): Promis
     return Promise.reject(new AuthSdkError('Unable to parse a token from the url'));
   }
 
-  const oauthParams: TransactionMeta = sdk.transactionManager.load({
-    oauth: true,
-    pkce: sdk.options.pkce
-  });
-  const urls: CustomUrls = oauthParams.urls as CustomUrls;
-  delete oauthParams.urls;
-
   return Promise.resolve(urlParamsToObject(paramStr))
-    .then(function (res) {
+    .then(function (res: OAuthParams) {
+      const state = res.state;
+      const oauthParams: TransactionMeta = sdk.transactionManager.load({
+        oauth: true,
+        pkce: sdk.options.pkce,
+        state
+      });
+      const urls: CustomUrls = oauthParams.urls as CustomUrls;
+      delete oauthParams.urls;
+
       if (!url) {
         // Clean hash or search from the url
         responseMode === 'query' ? removeSearch(sdk) : removeHash(sdk);
@@ -81,12 +83,16 @@ export function parseFromUrl(sdk, options: string | ParseFromUrlOptions): Promis
       return handleOAuthResponse(sdk, oauthParams, res, urls)
         .catch(err => {
           if (!isInteractionRequiredError(err)) {
-            sdk.transactionManager.clear();
+            sdk.transactionManager.clear({
+              state
+            });
           }
           throw err;
         })
         .then(res => {
-          sdk.transactionManager.clear();
+          sdk.transactionManager.clear({
+            state
+          });
           return res;
         });
     });
