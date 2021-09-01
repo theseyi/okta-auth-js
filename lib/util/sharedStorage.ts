@@ -8,7 +8,8 @@ export function pruneSharedStorage(storageManager: StorageManager) {
   const entries = sharedStorage.getStorage();
   Object.keys(entries).forEach(state => {
     const entry = entries[state];
-    if (Date.now() - entry.dateCreated > MAX_ENTRY_LIFETIME) {
+    const age = Date.now() - entry.dateCreated;
+    if (age > MAX_ENTRY_LIFETIME) {
       delete entries[state];
     }
   });
@@ -30,7 +31,7 @@ export function loadTransactionFromSharedStorage(storageManager: StorageManager,
   const sharedStorage = storageManager.getSharedTansactionStorage();
   const entries = sharedStorage.getStorage();
   const entry = entries[state];
-  if (entry.transaction && isTransactionMeta(entry.transaction)) {
+  if (entry && entry.transaction && isTransactionMeta(entry.transaction)) {
     return entry.transaction;
   }
   return null;

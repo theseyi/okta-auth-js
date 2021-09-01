@@ -15,7 +15,7 @@ import StorageManager from '../StorageManager';
 import { CustomUrls } from './OktaAuthOptions';
 
 export interface TransactionManagerOptions {
-  storageManager: StorageManager;
+  storageManager?: StorageManager;
   enableSharedStorage?: boolean; // default false
   legacyWidgetSupport?: boolean; // default true
   saveNonceCookie?: boolean; // default true
